@@ -1,16 +1,16 @@
 {
   "terminal.integrated.shell.windows": "C:\\Program Files\\Git\\bin\\bash.exe",
   "http.proxyStrictSSL": false,
-  "editor.formatOnSave": false,
+  "editor.formatOnSave": true,
   "[javascript]": {
-    "editor.formatOnSave": true
+    "editor.formatOnSave": false
   },
   "[typescript]": {
-    "editor.formatOnSave": true
+    "editor.formatOnSave": false
   },
   "eslint.autoFixOnSave": true,
   "files.associations": {
-    "*.js": "javascriptreact"
+    "*.jsx": "javascriptreact"
   },
   "files.exclude": {
     "**/.git": true,
@@ -29,7 +29,7 @@
   "editor.detectIndentation": true,
   "workbench.editor.enablePreviewFromQuickOpen": false,
   "diffEditor.ignoreTrimWhitespace": true,
-  "git.autofetch": true,
+  "git.autofetch": false,
   "git.confirmSync": false,
   "workbench.colorTheme": "Cobalt2",
   "typescript.updateImportsOnFileMove.enabled": "always",
