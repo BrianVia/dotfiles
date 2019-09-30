@@ -8,6 +8,9 @@
     "[typescript]": {
       "editor.formatOnSave": true
     },
+    "[html]": {
+      "editor.formatOnSave": true
+    },
     "eslint.autoFixOnSave": true,
     "files.associations": {
       "*.jsx": "javascriptreact"
@@ -20,8 +23,6 @@
       "**/.DS_Store": true,
       "node_modules": false
     },
-    "typescript.validate.enable": false,
-    "javascript.validate.enable": false,
     "editor.wordWrap": "wordWrapColumn",
     "editor.wordWrapColumn": 120,
     "search.smartCase": true,
