@@ -1,41 +1,49 @@
 {
-    "terminal.integrated.shell.windows": "C:\\Program Files\\Git\\bin\\bash.exe",
-    "http.proxyStrictSSL": false,
-    "editor.formatOnSave": false,
-    "[javascript]": {
-      "editor.formatOnSave": true
-    },
-    "[typescript]": {
-      "editor.formatOnSave": true
-    },
-    "[html]": {
-      "editor.formatOnSave": true
-    },
-    "eslint.autoFixOnSave": true,
-    "files.associations": {
-      "*.jsx": "javascriptreact"
-    },
-    "files.exclude": {
-      "**/.git": true,
-      "**/.svn": true,
-      "**/.hg": true,
-      "**/CVS": true,
-      "**/.DS_Store": true,
-      "node_modules": false
-    },
-    "editor.wordWrap": "wordWrapColumn",
-    "editor.wordWrapColumn": 120,
-    "search.smartCase": true,
-    "editor.insertSpaces": true,
-    "editor.detectIndentation": true,
-    "workbench.editor.enablePreviewFromQuickOpen": false,
-    "diffEditor.ignoreTrimWhitespace": true,
-    "git.autofetch": false,
-    "git.confirmSync": false,
-    "workbench.colorTheme": "Halcyon",
-    "typescript.updateImportsOnFileMove.enabled": "always",
-    "editor.minimap.enabled": false,
-    "window.zoomLevel": 0,
-    "workbench.editor.highlightModifiedTabs": true,
-    "workbench.sideBar.location": "left"
-  }
+  "files.associations": {
+    "*.jsx": "javascriptreact",
+  },
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "node_modules": false
+  },
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": false,
+    "strings": false
+  },
+  "codesnap.showWindowControls": false,
+  "diffEditor.ignoreTrimWhitespace": true,
+  "editor.cursorBlinking": "expand",
+  "editor.detectIndentation": true,
+  "editor.fontFamily": "Fira Code",
+  "editor.fontLigatures": true,
+  "editor.formatOnPaste": true,
+  "editor.formatOnSave": true,
+  "editor.insertSpaces": true,
+  "editor.minimap.enabled": false,
+  "editor.occurrencesHighlight": false,
+  "editor.snippetSuggestions": "inline",
+  "editor.suggest.snippetsPreventQuickSuggestions": false,
+  "editor.tabCompletion": "on",
+  "editor.wordWrap": "wordWrapColumn",
+  "editor.wordWrapColumn": 120,
+  "emmet.showExpandedAbbreviation": "inMarkupAndStylesheetFilesOnly",
+  "emmet.triggerExpansionOnTab": true,
+  "eslint.autoFixOnSave": true,
+  "git.autofetch": false,
+  "git.confirmSync": false,
+  "http.proxyStrictSSL": false,
+  "search.smartCase": true,
+  "terminal.integrated.shell.windows": "C:\\Program Files\\Git\\bin\\bash.exe",
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "window.zoomLevel": 0,
+  "workbench.colorTheme": "Halcyon",
+  "workbench.editor.enablePreviewFromQuickOpen": false,
+  "workbench.editor.highlightModifiedTabs": true,
+  "workbench.settings.editor": "json",
+  "workbench.sideBar.location": "right",
+}
