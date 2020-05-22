@@ -1,0 +1,59 @@
+#### Git ####
+alias ga='git add -a'
+alias gac='git add -a; git commit -m'
+alias gp='git push'
+alias gpu='git pull'
+
+alias gs='git status'
+alias gd='git diff'
+alias gds='git diff --staged'
+
+alias gm='git commit -m'
+alias gc='git checkout'
+alias gf="git fetch -a"
+
+alias mm='(current_branch=`git rev-parse --abbrev-ref HEAD`; git checkout master; git pull; git checkout $current_branch; git merge master)' # merge master into the current branch
+alias bb='git checkout -' # back to previous branch
+
+
+#### Navigation ####
+alias cdda='cd ~/Development/AAMC/'
+alias cddm='cd ~/Development/AAMC/soa-aamc/'
+alias eda='vim ~/.development_aliases'
+alias epa='vim ~/.personal_aliases'
+alias e='vim'
+alias cm='code ~/Development/AAMC/aamc.code-workspace'
+
+#### Remote Work ####
+alias sv="ssh via-server" # Ssh Via-server
+alias cvs='code --folder-uri vscode-remote://ssh-remote+via-server/home/via' # Code - Via-Server
+alias cvsm='code --folder-uri vscode-remote://ssh-remote+via-server/home/via/ Development/AAMC/soa-aamc/' # Code - Via-Server - Monorepo
+alias cvsd='code --folder-uri vscode-remote://ssh-remote+via-server/home/via/Docker' # Code - Via-Server - Docker
+
+#### Mono-Repo ####
+##### All Apps #####
+alias ba='npx nx run-many --target=build --all --parallel --maxParallel=4' # Build All
+alias ta='npx nx run-many --target=test --all --parallel --maxParallel=4' # Test All
+alias bpa='ba; ta;' # Build Plan All
+
+##### Individual Apps #####
+alias t='npx nx test' # Test
+
+alias eh='npx nx e2e --headless' # End-to-End Headless
+alias ew='npx nx e2e --watch' # End-to-End Watch
+
+alias b='npx nx build' # Build
+alias bp='npx nx build --prod' # Build (Production)
+
+alias s='npx nx serve' # Serve
+
+
+#### Send to Server #### 
+#alias svba='ssh via@via-server'
+#alias svb =''
+#alias svta=''
+#alias sve =''
+#alias svbp=''
+
+#### Docker ####
+alias dcu='docker-compose up -d'
