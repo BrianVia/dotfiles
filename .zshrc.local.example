@@ -1,0 +1,64 @@
+# .zshrc.local (MACHINE-SPECIFIC - NOT COMMITTED)
+#
+# This file is automatically sourced by .zshrc if it exists
+# Use it for machine-specific aliases, functions, or environment variables
+#
+# Copy this file to ~/.zshrc.local and customize for your machine
+#
+# Examples:
+
+# Machine-specific aliases
+# alias work-vm="ssh user@work.example.com"
+# alias personal-vm="ssh user@personal.example.com"
+
+# Machine-specific functions
+# work() {
+#   echo "Switching to work mode..."
+#   export AWS_PROFILE="dfinitiv-mojo-prod-power-user"
+#   cd ~/Development/Dfinitiv
+# }
+
+# Machine-specific environment variables
+# export WORK_ENVIRONMENT=true
+# export PERSONAL_ENVIRONMENT=false
+
+# Local development server configuration
+# export DEV_SERVER_PORT=3000
+# export DEV_SERVER_HOST=localhost
+
+# Database connection strings (for local dev only)
+# export DATABASE_URL="postgresql://user:password@localhost:5432/local_db"
+
+# API endpoints for local development
+# export API_BASE_URL="http://localhost:8000"
+
+# Editor preference on this machine
+# export EDITOR="code"
+
+# Node/NPM specific settings
+# export NVM_DIR="$HOME/.nvm"
+# [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+# Python virtual environment
+# export VENV_PATH="$HOME/venv"
+# if [ -d "$VENV_PATH" ]; then
+#   source "$VENV_PATH/bin/activate"
+# fi
+
+# Custom PATH additions
+# export PATH="$HOME/local/bin:$PATH"
+
+# Machine name detection
+# if [[ $(uname -s) == "Darwin" ]]; then
+#   # macOS-specific
+#   alias ll="ls -lA"
+# else
+#   # Linux-specific
+#   alias ll="ls -lhA"
+# fi
+
+# NOTE: This file is NOT tracked by git, so it's safe for:
+# - Local overrides of global settings
+# - Machine-specific secrets
+# - Development environment variables
+# - Temporary aliases and functions

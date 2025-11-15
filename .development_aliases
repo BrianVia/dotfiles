@@ -1,0 +1,73 @@
+#### Git ####
+
+alias sendit='git add . && git commit -m "full send" && git push'
+alias ccf='copy_changed_files.sh'
+alias cdf='copy_directory_files.sh'
+
+
+alias gcud='git config user.name "Brian Via" && git config user.email "brian.via@dfinitiv.io"'
+alias gcup='git config user.name "Brian Via" && git config user.email "brian.via.dev@gmail.com"'
+
+alias glm='git log --author="Brian Via"'            #"git log --me"
+alias glm1='git log --author="Brian Via" --oneline' #same as above but one line
+
+alias ga='git add -a'
+alias gp='git push'
+alias gpu='git pull'
+
+alias gs='git status'
+alias gd='git diff'
+alias gds='git diff --staged'
+
+alias gm='git commit -am'
+alias gc='git checkout'
+alias gf="git fetch -a"
+
+alias mm='(current_branch=`git rev-parse --abbrev-ref HEAD`; git checkout master; git pull; git checkout $current_branch; git merge master)' # merge master into the current branch
+alias mlu='git fetch upstream; git checkout main; git merge upstream/main; git push; git checkout -;'                                        # merge latest upstream
+
+alias bb='git checkout -' # back to previous branch
+
+#### Navigation ####
+alias eda='code ~/.development_aliases'
+alias epa='code ~/.personal_aliases'
+alias ez='code ~/.zshrc'
+alias e='vim'
+alias cddd='cd ~/Development/Dfinitiv/'
+
+
+alias ll='ls -lash'
+alias lr='ls -1t | head'
+
+#### PNPM ####
+alias pn='pnpm'
+
+#### Remote Work ####
+alias sv="ssh via@via-server"
+
+#### Docker ####
+alias dcu='docker-compose up -d'
+alias dc='docker-compose'
+alias dcd='docker-compose down'
+
+
+#### Clipboard Utilities ####
+alias copy='~/scripts/copy_clipboard.sh'
+alias pasta='~/scripts/paste_clipboard.sh'
+
+#### Development Server ####
+alias serveit='~/scripts/serveit.sh'
+
+#### Utilities ####
+alias timer='~/scripts/timer.sh'
+alias hoy='~/scripts/hoy.sh'
+alias rn='~/scripts/rn.sh'
+alias running='~/scripts/running.sh'
+alias notify='~/scripts/notify.rb'
+
+
+#### DFINITIV #####
+alias cdd="code ~/Development/Dfinitiv/dfinitiv.code-workspace"
+
+export DEV_USER_ID='ef4a1216-72d4-4456-9c12-0c801a6a78bf'
+export TEST_USER_ID='e89d330c-8ec0-4151-a76a-30e8bdbef44b'

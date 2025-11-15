@@ -1,0 +1,7 @@
+#### Personal Aliases
+
+alias src='omz reload'
+alias claer='clear'
+alias utts='cd ~/Development/Personal/torrent-uploader/ && node index.js && cd -'
+alias codex-yolo='codex --dangerously-bypass-approvals-and-sandbox'
+alias claude-yolo='claude --dangerously-skip-permissions'

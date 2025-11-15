@@ -1,0 +1,63 @@
+# Secrets and credentials - NEVER commit these
+.aws/credentials
+.aws/sso/
+.secret_env_vars
+.env
+.env.local
+.env.*.local
+
+# 1Password
+.op/
+
+# SSH keys
+.ssh/id_*
+.ssh/id_*.pub
+!.ssh/id_*.pub.example
+
+# API keys and tokens
+.github/token
+.github/config
+.github/hosts
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+.AppleDouble
+.LSOverride
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.editor-config
+
+# Node/npm
+node_modules/
+package-lock.json
+yarn.lock
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# macOS specific
+Library/
+.config/MacOSXKeychain
+
+# WSL/Linux specific
+.wsl2-env
+
+# Local overrides
+.local/
+.config/local/
+
+# Generated/cached
+.cache/
+**/cache/

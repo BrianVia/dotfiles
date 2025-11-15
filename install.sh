@@ -1,0 +1,115 @@
+#!/bin/bash
+set -e
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+HOME_DIR="$HOME"
+
+echo -e "${BLUE}================================${NC}"
+echo -e "${BLUE}Dotfiles Installation${NC}"
+echo -e "${BLUE}================================${NC}"
+echo ""
+echo "Dotfiles directory: $DOTFILES_DIR"
+echo "Home directory: $HOME_DIR"
+echo ""
+
+# Function to create symlink
+create_symlink() {
+    local src="$1"
+    local dest="$2"
+    local name=$(basename "$src")
+
+    if [ -L "$dest" ]; then
+        # Already a symlink
+        echo -e "${YELLOW}→${NC} Symlink exists: $name"
+    elif [ -e "$dest" ]; then
+        # File exists, back it up
+        echo -e "${YELLOW}⚠ Backing up existing file:${NC} $name"
+        mv "$dest" "${dest}.backup.$(date +%s)"
+        ln -s "$src" "$dest"
+        echo -e "${GREEN}✓${NC} Symlinked: $name"
+    else
+        # Create new symlink
+        ln -s "$src" "$dest"
+        echo -e "${GREEN}✓${NC} Symlinked: $name"
+    fi
+}
+
+# Create .aws directory if it doesn't exist
+echo -e "${BLUE}Setting up AWS configuration...${NC}"
+mkdir -p "$HOME_DIR/.aws/cli"
+create_symlink "$DOTFILES_DIR/.aws/config" "$HOME_DIR/.aws/config"
+echo ""
+
+# Symlink shell configuration files
+echo -e "${BLUE}Setting up shell configuration...${NC}"
+create_symlink "$DOTFILES_DIR/.zshrc" "$HOME_DIR/.zshrc"
+create_symlink "$DOTFILES_DIR/.bashrc" "$HOME_DIR/.bashrc"
+create_symlink "$DOTFILES_DIR/.profile" "$HOME_DIR/.profile"
+create_symlink "$DOTFILES_DIR/.development_aliases" "$HOME_DIR/.development_aliases"
+create_symlink "$DOTFILES_DIR/.personal_aliases" "$HOME_DIR/.personal_aliases"
+echo ""
+
+# Symlink package manager configs
+echo -e "${BLUE}Setting up package manager configs...${NC}"
+create_symlink "$DOTFILES_DIR/.npmrc" "$HOME_DIR/.npmrc"
+create_symlink "$DOTFILES_DIR/.yarnrc" "$HOME_DIR/.yarnrc"
+echo ""
+
+# Make scripts directory in home if it doesn't exist
+echo -e "${BLUE}Setting up scripts...${NC}"
+mkdir -p "$HOME_DIR/scripts"
+# Copy scripts instead of symlinking (so PATH can find them directly)
+cp -f "$DOTFILES_DIR/scripts"/* "$HOME_DIR/scripts/" 2>/dev/null || true
+chmod +x "$HOME_DIR/scripts"/*.sh "$HOME_DIR/scripts"/*.rb "$HOME_DIR/scripts"/*.py 2>/dev/null || true
+echo -e "${GREEN}✓${NC} Scripts installed to ~/scripts"
+echo ""
+
+# Setup .secret_env_vars file (if needed)
+if [ ! -f "$HOME_DIR/.secret_env_vars" ]; then
+    echo -e "${YELLOW}⚠ Creating .secret_env_vars template...${NC}"
+    cat > "$HOME_DIR/.secret_env_vars" << 'EOF'
+# Secret environment variables (NEVER commit this file)
+# Add your secrets here:
+
+# AWS (if not using SSO)
+# export AWS_ACCESS_KEY_ID=""
+# export AWS_SECRET_ACCESS_KEY=""
+
+# GitHub token
+# export GITHUB_TOKEN=""
+
+# Other secrets
+# export API_KEY=""
+EOF
+    chmod 600 "$HOME_DIR/.secret_env_vars"
+    echo -e "${GREEN}✓${NC} Created .secret_env_vars (chmod 600)"
+fi
+echo ""
+
+# Setup AWS credentials file if it doesn't exist
+if [ ! -f "$HOME_DIR/.aws/credentials" ]; then
+    echo -e "${YELLOW}⚠ AWS credentials file not found${NC}"
+    echo -e "   You can:"
+    echo -e "   1. Copy your credentials: ${BLUE}cp ~/.aws/credentials ~/Development/Personal/dotfiles/.aws/credentials.example${NC}"
+    echo -e "   2. Use 1Password: ${BLUE}op signin${NC} and set AWS_ACCESS_KEY_ID via environment"
+    echo -e "   3. Use AWS SSO: ${BLUE}aws sso login --profile <profile-name>${NC}"
+fi
+echo ""
+
+echo -e "${GREEN}================================${NC}"
+echo -e "${GREEN}Installation complete!${NC}"
+echo -e "${GREEN}================================${NC}"
+echo ""
+echo "Next steps:"
+echo "  1. Review ~/.secret_env_vars and add your secrets"
+echo "  2. Authenticate AWS SSO: ${BLUE}aws sso login --profile dfinitiv-brian${NC}"
+echo "  3. Reload shell: ${BLUE}source ~/.zshrc${NC}"
+echo "  4. Test: ${BLUE}echo \$DEV_USER_ID${NC}"
+echo ""
