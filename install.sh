@@ -80,8 +80,22 @@ echo ""
 # Symlink tool configs
 echo -e "${BLUE}Setting up tool configurations...${NC}"
 mkdir -p "$HOME_DIR/.config/ghostty"
+mkdir -p "$HOME_DIR/.config/karabiner"
 create_symlink "$DOTFILES_DIR/.config/ghostty/config" "$HOME_DIR/.config/ghostty/config"
 create_symlink "$DOTFILES_DIR/.config/starship.toml" "$HOME_DIR/.config/starship.toml"
+create_symlink "$DOTFILES_DIR/.config/karabiner/karabiner.json" "$HOME_DIR/.config/karabiner/karabiner.json"
+echo ""
+
+# VS Code settings
+echo -e "${BLUE}Setting up VS Code...${NC}"
+VSCODE_DIR="$HOME_DIR/Library/Application Support/Code/User"
+if [ -d "$VSCODE_DIR" ] || [ -d "/Applications/Visual Studio Code.app" ]; then
+    mkdir -p "$VSCODE_DIR"
+    create_symlink "$DOTFILES_DIR/vscode/settings.json" "$VSCODE_DIR/settings.json"
+    create_symlink "$DOTFILES_DIR/vscode/keybindings.json" "$VSCODE_DIR/keybindings.json"
+else
+    echo -e "${YELLOW}→${NC} VS Code not found, skipping"
+fi
 echo ""
 
 # Make scripts directory in home if it doesn't exist

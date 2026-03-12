@@ -1,0 +1,81 @@
+{
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+  },
+  "editor.accessibilitySupport": "off",
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit",
+  },
+  "editor.minimap.enabled": false,
+  "editor.quickSuggestions": {
+    "strings": "on",
+  },
+  "git.autofetch": true,
+  "git.confirmSync": false,
+  "githubPullRequests.createOnPublishBranch": "never",
+  "terminal.integrated.env.osx": {
+    "FIG_NEW_SESSION": "1",
+  },
+  "window.commandCenter": false,
+  "workbench.iconTheme": "material-icon-theme",
+  "editor.inlineSuggest.enabled": true,
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+  },
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features",
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+  },
+  "[astro]": {
+    "editor.defaultFormatter": "astro-build.astro-vscode",
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+  },
+  "remote.SSH.configFile": "/Users/via/.ssh/config",
+  "githubPullRequests.pullBranch": "never",
+  "window.zoomLevel": 2,
+  "githubPullRequests.pushBranch": "always",
+  "security.promptForLocalFileProtocolHandling": false,
+
+  "editor.largeFileOptimizations": false,
+
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "editor.unicodeHighlight.ambiguousCharacters": false,
+  "lldb.library": "/Applications/Xcode.app/Contents/SharedFrameworks/LLDB.framework/Versions/A/LLDB",
+  "lldb.launch.expressions": "native",
+  "json.maxItemsComputed": 50000,
+  "nxConsole.showNodeVersionOnStartup": false,
+  "security.workspace.trust.untrustedFiles": "open",
+  "eslint.codeActionsOnSave.rules": null,
+  "settingsSync.ignoredSettings": ["remote.SSH.configFile"],
+  "editor.formatOnSaveMode": "modificationsIfAvailable",
+  "aws.samcli.lambdaTimeout": 91234,
+  "git.ignoreRebaseWarning": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.stickyScroll.enabled": false,
+  "github.copilot.enable": {
+    "*": true,
+    "plaintext": false,
+    "markdown": false,
+    "scminput": false,
+    "json": false,
+  },
+  "[ignore]": {
+    "editor.defaultFormatter": "foxundermoon.shell-format",
+  },
+  "[dockerfile]": {
+    "editor.defaultFormatter": "ms-azuretools.vscode-docker",
+  },
+  "editor.formatOnSave": true,
+  "svelte.enable-ts-plugin": true,
+  "git.enableSmartCommit": true,
+  "prettier.printWidth": 120,
+  "github.copilot.editor.enableAutoCompletions": true,
+  "workbench.colorTheme": "Halcyon",
+}
