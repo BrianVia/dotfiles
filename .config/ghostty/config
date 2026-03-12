@@ -1,0 +1,14 @@
+# Essential shell integration for SSH
+shell-integration = detect
+shell-integration-features = sudo
+
+# Font and display settings (adjust as needed)
+font-family = "JetBrains Mono"
+font-size = 14
+
+# Theme (optional)
+theme = "Apple Classic"
+
+# Cursor settings to avoid SSH rendering issues
+cursor-style = block
+cursor-style-blink = false

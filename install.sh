@@ -50,10 +50,19 @@ echo ""
 # Symlink shell configuration files
 echo -e "${BLUE}Setting up shell configuration...${NC}"
 create_symlink "$DOTFILES_DIR/.zshrc" "$HOME_DIR/.zshrc"
+create_symlink "$DOTFILES_DIR/.zprofile" "$HOME_DIR/.zprofile"
+create_symlink "$DOTFILES_DIR/.zshenv" "$HOME_DIR/.zshenv"
 create_symlink "$DOTFILES_DIR/.bashrc" "$HOME_DIR/.bashrc"
 create_symlink "$DOTFILES_DIR/.profile" "$HOME_DIR/.profile"
 create_symlink "$DOTFILES_DIR/.development_aliases" "$HOME_DIR/.development_aliases"
 create_symlink "$DOTFILES_DIR/.personal_aliases" "$HOME_DIR/.personal_aliases"
+echo ""
+
+# Symlink git configuration
+echo -e "${BLUE}Setting up git configuration...${NC}"
+create_symlink "$DOTFILES_DIR/.gitconfig" "$HOME_DIR/.gitconfig"
+create_symlink "$DOTFILES_DIR/.gitconfig-work" "$HOME_DIR/.gitconfig-work"
+create_symlink "$DOTFILES_DIR/.gitconfig-personal" "$HOME_DIR/.gitconfig-personal"
 echo ""
 
 # Symlink package manager configs
@@ -62,11 +71,24 @@ create_symlink "$DOTFILES_DIR/.npmrc" "$HOME_DIR/.npmrc"
 create_symlink "$DOTFILES_DIR/.yarnrc" "$HOME_DIR/.yarnrc"
 echo ""
 
+# Symlink SSH config (not keys)
+echo -e "${BLUE}Setting up SSH config...${NC}"
+mkdir -p "$HOME_DIR/.ssh"
+create_symlink "$DOTFILES_DIR/.ssh/config" "$HOME_DIR/.ssh/config"
+echo ""
+
+# Symlink tool configs
+echo -e "${BLUE}Setting up tool configurations...${NC}"
+mkdir -p "$HOME_DIR/.config/ghostty"
+create_symlink "$DOTFILES_DIR/.config/ghostty/config" "$HOME_DIR/.config/ghostty/config"
+create_symlink "$DOTFILES_DIR/.config/starship.toml" "$HOME_DIR/.config/starship.toml"
+echo ""
+
 # Make scripts directory in home if it doesn't exist
 echo -e "${BLUE}Setting up scripts...${NC}"
 mkdir -p "$HOME_DIR/scripts"
 # Copy scripts instead of symlinking (so PATH can find them directly)
-cp -f "$DOTFILES_DIR/scripts"/* "$HOME_DIR/scripts/" 2>/dev/null || true
+rsync -av --exclude='node_modules' --exclude='*.log' --exclude='bun.lock' "$DOTFILES_DIR/scripts/" "$HOME_DIR/scripts/" > /dev/null
 chmod +x "$HOME_DIR/scripts"/*.sh "$HOME_DIR/scripts"/*.rb "$HOME_DIR/scripts"/*.py 2>/dev/null || true
 echo -e "${GREEN}✓${NC} Scripts installed to ~/scripts"
 echo ""
@@ -103,13 +125,37 @@ if [ ! -f "$HOME_DIR/.aws/credentials" ]; then
 fi
 echo ""
 
+# Install Homebrew packages
+if command -v brew &> /dev/null; then
+    echo -e "${BLUE}Installing Homebrew packages...${NC}"
+    if [ -f "$DOTFILES_DIR/Brewfile" ]; then
+        brew bundle install --file="$DOTFILES_DIR/Brewfile" --no-lock 2>/dev/null || true
+        echo -e "${GREEN}✓${NC} Homebrew packages installed"
+    fi
+else
+    echo -e "${YELLOW}⚠ Homebrew not found. Install it first:${NC}"
+    echo -e "   /bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
+fi
+echo ""
+
+# Install oh-my-zsh if not present
+if [ ! -d "$HOME_DIR/.oh-my-zsh" ]; then
+    echo -e "${BLUE}Installing oh-my-zsh...${NC}"
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+    # Install zsh-autosuggestions plugin
+    git clone https://github.com/zsh-users/zsh-autosuggestions "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions" 2>/dev/null || true
+    echo -e "${GREEN}✓${NC} oh-my-zsh installed"
+fi
+echo ""
+
 echo -e "${GREEN}================================${NC}"
 echo -e "${GREEN}Installation complete!${NC}"
 echo -e "${GREEN}================================${NC}"
 echo ""
 echo "Next steps:"
 echo "  1. Review ~/.secret_env_vars and add your secrets"
-echo "  2. Authenticate AWS SSO: ${BLUE}aws sso login --profile dfinitiv-brian${NC}"
-echo "  3. Reload shell: ${BLUE}source ~/.zshrc${NC}"
-echo "  4. Test: ${BLUE}echo \$DEV_USER_ID${NC}"
+echo "  2. Copy SSH keys from your old machine (or generate new ones)"
+echo "  3. Authenticate AWS SSO: ${BLUE}aws sso login --profile dfinitiv-brian${NC}"
+echo "  4. Clone repos: ${BLUE}$DOTFILES_DIR/clone-repos.sh${NC}"
+echo "  5. Reload shell: ${BLUE}source ~/.zshrc${NC}"
 echo ""

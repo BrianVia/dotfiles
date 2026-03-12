@@ -5,3 +5,17 @@ alias claer='clear'
 alias utts='cd ~/Development/Personal/torrent-uploader/ && node index.js && cd -'
 alias codex-yolo='codex --dangerously-bypass-approvals-and-sandbox'
 alias claude-yolo='claude --dangerously-skip-permissions'
+alias ccy='claude --dangerously-skip-permissions'
+alias coy='codex --dangerously-bypass-approvals-and-sandbox'
+alias cdp='cd ~/Development/Personal/'
+alias sv='ssh via@via-server'
+
+# Tail follow with default 100 lines, use -l to override (e.g., tf -l 1000 file.log)
+tf() {
+  local lines=100
+  if [[ "$1" == "-l" ]]; then
+    lines="$2"
+    shift 2
+  fi
+  tail -f -n "$lines" "$@"
+}

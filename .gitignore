@@ -9,10 +9,12 @@
 # 1Password
 .op/
 
-# SSH keys
+# SSH keys (config is tracked, keys are NOT)
 .ssh/id_*
-.ssh/id_*.pub
-!.ssh/id_*.pub.example
+.ssh/known_hosts*
+.ssh/authorized_keys
+.ssh/environment-*
+!.ssh/config
 
 # API keys and tokens
 .github/token
@@ -39,8 +41,7 @@ Thumbs.db
 
 # Node/npm
 node_modules/
-package-lock.json
-yarn.lock
+bun.lock
 
 # Python
 __pycache__/

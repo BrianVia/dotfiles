@@ -1,0 +1,15 @@
+{
+  "name": "via-scripts",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "@aws-sdk/client-secrets-manager": "^3.x",
+    "chalk": "^5.x",
+    "fast-glob": "^3.3.2"
+  },
+  "devDependencies": {
+    "bun-types": "^1.3.5"
+  }
+}

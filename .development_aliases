@@ -37,7 +37,7 @@ alias cddd='cd ~/Development/Dfinitiv/'
 
 
 alias ll='ls -lash'
-alias lr='ls -1t | head'
+alias lr='CLICOLOR_FORCE=1 ls -1tlashG | head -20'
 
 #### PNPM ####
 alias pn='pnpm'
@@ -71,3 +71,8 @@ alias cdd="code ~/Development/Dfinitiv/dfinitiv.code-workspace"
 
 export DEV_USER_ID='ef4a1216-72d4-4456-9c12-0c801a6a78bf'
 export TEST_USER_ID='e89d330c-8ec0-4151-a76a-30e8bdbef44b'
+
+
+alias brs="bun run start"
+alias brd="bun run dev"
+alias brt="bun run test"

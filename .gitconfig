@@ -1,0 +1,18 @@
+[user]
+    name = Brian Via
+    email = brian.via.dev@gmail.com
+
+[push]
+	autoSetupRemote = true
+
+[includeIf "gitdir:~/Development/Dfinitiv/"]
+    path = ~/.gitconfig-work
+
+[includeIf "gitdir:~/Development/Personal/"]
+    path = ~/.gitconfig-personal
+[credential "https://github.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential

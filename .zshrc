@@ -18,6 +18,11 @@ else
     export IS_WSL2=false
 fi
 
+# Unlock keychain for SSH sessions (needed for Claude Code)
+if [[ -n "$SSH_CONNECTION" ]]; then
+    security unlock-keychain ~/Library/Keychains/login.keychain-db 2>/dev/null
+fi
+
 export ZSH="$HOME_DIR/.oh-my-zsh"
 
 ZSH_THEME="robbyrussell"
@@ -73,6 +78,15 @@ sso() {
     fi
 }
 
+# Java JDK for Android development
+export JAVA_HOME=$(brew --prefix openjdk@17)
+export PATH="$JAVA_HOME/bin:$PATH"
+
+# Android SDK
+export ANDROID_HOME=$HOME/Library/Android/sdk
+export PATH=$PATH:$ANDROID_HOME/emulator
+export PATH=$PATH:$ANDROID_HOME/platform-tools
+
 # Amazon Q post block. Keep at the bottom of this file.
 # macOS-specific Amazon Q
 if [[ "$OSTYPE" == darwin* ]]; then
@@ -88,3 +102,14 @@ export PATH=~/.npm-global/bin:$PATH
 mkcd() {
   mkdir -p "$1" && cd "$1"
 }
+
+# Added by Antigravity
+export PATH="/Users/via/.antigravity/antigravity/bin:$PATH"
+
+alias claude="/Users/via/.claude/local/claude"
+
+# opencode
+export PATH=/Users/via/.opencode/bin:$PATH
+
+if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi
+
