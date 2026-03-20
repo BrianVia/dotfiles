@@ -22,7 +22,11 @@ fi
 # Install oh-my-zsh if not present
 if [ ! -d "$HOME_DIR/.oh-my-zsh" ]; then
     echo -e "${BLUE}Installing oh-my-zsh...${NC}"
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
+    # oh-my-zsh may still create a .zshrc — remove it so symlinks.sh can create ours
+    if [ -f "$HOME_DIR/.zshrc" ] && [ ! -L "$HOME_DIR/.zshrc" ]; then
+        rm -f "$HOME_DIR/.zshrc"
+    fi
     echo -e "${GREEN}✓${NC} oh-my-zsh installed"
 else
     echo -e "${YELLOW}→${NC} oh-my-zsh already installed"
