@@ -53,3 +53,20 @@ if is_macos; then
     mkdir -p "$HOME_DIR/.config/karabiner"
     create_symlink "$DOTFILES_DIR/.config/karabiner/karabiner.json" "$HOME_DIR/.config/karabiner/karabiner.json"
 fi
+
+# Claude Code config
+section "Setting up Claude Code configuration..."
+mkdir -p "$HOME_DIR/.claude/commands" "$HOME_DIR/.claude/hooks"
+create_symlink "$DOTFILES_DIR/.claude/CLAUDE.md" "$HOME_DIR/.claude/CLAUDE.md"
+create_symlink "$DOTFILES_DIR/.claude/settings.json" "$HOME_DIR/.claude/settings.json"
+for cmd in "$DOTFILES_DIR/.claude/commands"/*.md; do
+    [ -f "$cmd" ] && create_symlink "$cmd" "$HOME_DIR/.claude/commands/$(basename "$cmd")"
+done
+for hook in "$DOTFILES_DIR/.claude/hooks"/*.sh; do
+    [ -f "$hook" ] && create_symlink "$hook" "$HOME_DIR/.claude/hooks/$(basename "$hook")"
+done
+
+# Dfinitiv CLAUDE.md
+section "Setting up Dfinitiv CLAUDE.md..."
+mkdir -p "$HOME_DIR/Development/Dfinitiv"
+create_symlink "$DOTFILES_DIR/dfinitiv-CLAUDE.md" "$HOME_DIR/Development/Dfinitiv/CLAUDE.md"
