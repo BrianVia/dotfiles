@@ -1,339 +1,280 @@
 # Setup Instructions for New Machine
 
-Complete guide to set up a new macOS or Linux machine with this dotfiles repository.
+Complete guide to bootstrap a brand new macOS or Linux machine from zero.
 
 ## Prerequisites
 
-- Git installed
-- SSH key set up (or use HTTPS clone)
-- Zsh or Bash shell available
-- macOS 10.13+ or Ubuntu/Debian
+A blank machine with internet access. That's it.
 
-## Step 1: Initial System Setup (If Using Ansible)
+| | macOS | Linux (Ubuntu/Debian) |
+|---|---|---|
+| **Git** | Comes with Xcode CLI tools | `sudo apt install git` |
+| **Curl** | Pre-installed | `sudo apt install curl` |
+| **Ansible** | `brew install ansible` | `sudo apt install ansible` |
 
-If using Ansible to automate setup:
+## Step 1: System Basics
+
+### macOS
 
 ```bash
-# On a new Ubuntu/Linux machine
-./install  # Run the Ansible installer
+# Xcode command line tools (includes git, make, clang)
+xcode-select --install
 
-# Or manually
-ansible-playbook ~/Development/Personal/ansible/local.yml
+# Homebrew
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+# Ansible (for SSH key decryption)
+brew install ansible
 ```
 
-This will install:
-- SSH configuration
-- Zsh with Oh-My-Zsh
-- Development tools
-- All your projects
-
-## Step 2: Clone Dotfiles Repository
-
-After Ansible setup (or manually):
+### Linux (Ubuntu/Debian)
 
 ```bash
-# Clone the dotfiles repo
-git clone git@github.com:BrianVia/dotfiles.git ~/Development/Personal/dotfiles
+sudo apt update
+sudo apt install -y git curl software-properties-common
+sudo apt-add-repository -y ppa:ansible/ansible
+sudo apt update
+sudo apt install -y ansible
+```
 
-# Navigate to the directory
+## Step 2: Clone Dotfiles
+
+Clone over HTTPS — you don't have an SSH key yet, that's the whole point.
+
+```bash
+mkdir -p ~/Development/Personal
+git clone https://github.com/BrianVia/dotfiles.git ~/Development/Personal/dotfiles
 cd ~/Development/Personal/dotfiles
 ```
 
-If you don't have SSH set up yet, use HTTPS:
+## Step 3: Run the Installer
+
 ```bash
-git clone https://github.com/BrianVia/dotfiles.git ~/Development/Personal/dotfiles
+./install.sh
 ```
 
-## Step 3: Run Installation Script
+You'll be prompted for the **ansible-vault password** to decrypt your SSH private key. This is the memorized password — no other credentials needed.
+
+The installer runs these stages in order:
+
+1. **SSH keys** — decrypts `.ssh/id_ed25519.vault` → `~/.ssh/id_ed25519`
+2. **Shell** — installs zsh (Linux), oh-my-zsh, zsh-autosuggestions
+3. **Symlinks** — all dotfiles, git configs, SSH config, tool configs
+4. **VS Code** — settings + keybindings to platform-correct path
+5. **Scripts** — copies `scripts/` → `~/scripts`
+6. **Packages** — Brewfile (macOS) or Aptfile + Snapfile (Linux), Claude CLI, Rust
+
+Each stage is idempotent — safe to re-run.
+
+## Step 4: Configure Secrets
+
+The installer creates `~/.secret_env_vars` with a template. Fill it in:
 
 ```bash
-# Make sure it's executable
-chmod +x ~/Development/Personal/dotfiles/install.sh
-
-# Run the installation
-~/Development/Personal/dotfiles/install.sh
+vim ~/.secret_env_vars
 ```
 
-The script will:
-- Create symlinks for all dotfiles
-- Back up any existing files
-- Copy scripts to `~/scripts`
-- Create `.secret_env_vars` template
-- Set up `.aws` directories
+```bash
+# Required for @dfinitiv npm packages
+export GITHUB_TOKEN="ghp_your_github_token"
 
-## Step 4: Reload Shell
+# Optional
+# export AWS_ACCESS_KEY_ID=""
+# export AWS_SECRET_ACCESS_KEY=""
+# export API_KEY=""
+```
+
+This file is `chmod 600` and gitignored. It's sourced by `.zshrc` on every shell startup.
+
+**Why GITHUB_TOKEN matters:** The `.npmrc` uses `${GITHUB_TOKEN}` to authenticate with GitHub Packages for `@dfinitiv`-scoped npm packages. Without it, `npm install` will fail on Dfinitiv projects.
+
+## Step 5: Reload Shell
 
 ```bash
-# Reload zsh
-exec zsh
-
-# Or source manually
 source ~/.zshrc
 ```
 
-## Step 5: Set Up AWS (SSO)
+Or start a new terminal session.
 
-### If using AWS SSO (Recommended):
+## Step 6: Clone All Repos
+
+Now that your SSH key is decrypted and in place:
 
 ```bash
-# Login to your AWS SSO profiles
+./clone-repos.sh
+```
+
+This clones 100+ repos into organized directories:
+
+```
+~/Development/
+  Dfinitiv/      # 40+ work repos
+  Personal/      # 60+ personal projects
+  Open-Source/    # Forks and references
+  MCP-Servers/   # MCP server repos
+```
+
+## Step 7: AWS SSO
+
+```bash
+# Primary profile
 aws sso login --profile dfinitiv-brian
-aws sso login --profile dfinitiv-mojo-dev-power-user
-aws sso login --profile dfinitiv-mojo-test-power-user
-aws sso login --profile dfinitiv-mojo-prod-power-user
 
-# Verify it works
+# Verify
 aws sts get-caller-identity --profile dfinitiv-brian
 ```
 
-### If using API keys:
+Available profiles (defined in `.aws/config`):
+- `dfinitiv-brian` — main admin
+- `dfinitiv-mojo-dev-power-user`
+- `dfinitiv-mojo-test-power-user`
+- `dfinitiv-mojo-prod-power-user`
 
-1. **Add credentials to 1Password** (recommended):
-   ```bash
-   op signin  # Authenticate
-   ```
+Use the `sso` shell function to interactively switch profiles.
 
-2. **Or create `~/.aws/credentials`** (less secure):
-   ```bash
-   # Edit: nano ~/.aws/credentials
-   [dfinitiv-brian]
-   aws_access_key_id = YOUR_KEY
-   aws_secret_access_key = YOUR_SECRET
-   ```
-   **⚠️ Never commit this file!**
+See [AWS.md](AWS.md) for details.
 
-See [AWS.md](AWS.md) for more details.
+## Verification Checklist
 
-## Step 6: Add Secret Environment Variables
-
-1. **Edit the secrets file:**
-   ```bash
-   vim ~/.secret_env_vars
-   ```
-
-2. **Add your secrets:**
-   ```bash
-   # GitHub token
-   export GITHUB_TOKEN="ghp_xxx..."
-
-   # Other API keys
-   export API_KEY="xxx..."
-   ```
-
-3. **Set proper permissions:**
-   ```bash
-   chmod 600 ~/.secret_env_vars
-   ```
-
-## Step 7: Verify Installation
-
-Test that everything is set up correctly:
+Run through these to confirm everything's working:
 
 ```bash
-# Test aliases
-gs                          # Should run: git status
-eda                         # Should open .development_aliases in code
+# SSH key works
+ssh -T git@github.com
+# → "Hi BrianVia! You've successfully authenticated..."
 
-# Test scripts
-timer 1m                    # Should start a 1-minute timer
-which copy                  # Should show: /Users/via/scripts/copy_clipboard.sh
+# Shell is zsh with oh-my-zsh
+echo $SHELL           # /bin/zsh
+echo $ZSH_THEME       # robbyrussell
 
-# Test environment variables
-echo $DEV_USER_ID           # Should show: ef4a1216-72d4-4456-9c12-0c801a6a78bf
-echo $PATH | grep scripts   # Should show scripts directory
+# Claude CLI installed
+claude --version
 
-# Test AWS
+# Aliases work
+gs                    # git status
+sendit                # add all, commit "full send", push
+
+# Scripts accessible
+which timer.sh        # ~/scripts/timer.sh
+hoy                   # today's date + calendar
+
+# Git identity
+git config user.name  # "Brian Via"
+
+# AWS (if configured)
 aws sts get-caller-identity --profile dfinitiv-brian
 
-# Test git config
-git config --global user.name
-git config --global user.email
+# 1Password SSH agent (if 1Password installed)
+ssh-add -l            # should list your key
 ```
-
-## Step 8: Optional - Set Up SSH Git
-
-If not already configured:
-
-```bash
-# Copy your SSH key (from another machine or create new)
-# Then configure git
-gcud   # Sets git config for dfinitiv email
-# or
-gcup   # Sets git config for personal email
-```
-
-## Step 9: Clone Your Projects
-
-The Ansible playbook should have already done this, but if not:
-
-```bash
-# Personal projects
-ansible-playbook ~/Development/Personal/ansible/local.yml --tags "personal-projects"
-
-# Dfinitiv projects
-ansible-playbook ~/Development/Personal/ansible/local.yml --tags "dfinitiv-projects"
-```
-
-## Step 10: Machine-Specific Configuration (Optional)
-
-Create a local override file for machine-specific settings:
-
-```bash
-# Create local zsh config (not tracked)
-cat > ~/.zshrc.local << 'EOF'
-# Machine-specific aliases and functions
-alias work-vm="ssh user@work-vm"
-export WORK_MACHINE=true
-EOF
-
-chmod 600 ~/.zshrc.local
-```
-
-This file is loaded automatically and not committed to git.
 
 ## Troubleshooting
 
-### "Command not found" errors
+### "ansible-vault: command not found"
 
-**Solution**: Reload your shell
+Install ansible before running the installer:
+- macOS: `brew install ansible`
+- Linux: `sudo apt install ansible`
+
+### SSH key decrypt fails / wrong password
+
+The vault password is the memorized one — no special characters, no newline. If you fat-finger it, just re-run `./install.sh` — it'll skip stages that already completed and re-prompt for the vault password.
+
+To manually re-decrypt:
 ```bash
-exec zsh
-# or
+rm ~/.ssh/id_ed25519
+cp ~/Development/Personal/dotfiles/.ssh/id_ed25519.vault ~/.ssh/id_ed25519
+ansible-vault decrypt ~/.ssh/id_ed25519
+chmod 600 ~/.ssh/id_ed25519
+```
+
+### "Command not found" after install
+
+Reload your shell:
+```bash
 source ~/.zshrc
+# or
+exec zsh
 ```
 
 ### Symlinks not created
 
-**Solution**: Re-run install script
+Re-run the installer — it's idempotent:
 ```bash
 ~/Development/Personal/dotfiles/install.sh
 ```
 
-### AWS SSO not working
+### npm install fails on @dfinitiv packages
 
-**Solution**: Re-authenticate
+Set your GitHub token:
 ```bash
-aws sso login --profile dfinitiv-brian
-aws sts get-caller-identity --profile dfinitiv-brian
-```
-
-### Scripts not found in PATH
-
-**Solution**: Verify PATH includes scripts directory
-```bash
-echo $PATH | grep scripts
-# If not, add this to .zshrc:
-# export PATH="$HOME/scripts:$PATH"
-```
-
-### Git not finding SSH key
-
-**Solution**: Add SSH key to ssh-agent
-```bash
-ssh-add ~/.ssh/id_ed25519
-ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-```
-
-### Permission denied on scripts
-
-**Solution**: Make scripts executable
-```bash
-chmod +x ~/scripts/*.sh
-chmod +x ~/scripts/*.rb
-chmod +x ~/scripts/*.py
-```
-
-## Platform-Specific Notes
-
-### macOS
-
-- Uses zsh by default (since Catalina)
-- Homebrew is recommended for package management
-- Some scripts use macOS-specific commands (pbcopy, pbpaste)
-- SSH keys should be in ~/.ssh/
-
-### Linux (Ubuntu/Debian)
-
-- Use `sudo apt update && sudo apt install` for packages
-- Some aliases may need adjustment:
-  ```bash
-  # In .development_aliases, clipboard commands differ:
-  # alias copy='xclip -selection clipboard'
-  # alias pasta='xclip -selection clipboard -o'
-  ```
-- Zsh isn't default; install with: `sudo apt install zsh`
-
-### WSL2 (Windows Subsystem for Linux)
-
-- Runs Linux inside Windows
-- SSH keys should work the same as Linux
-- Some paths may differ (Windows drives mounted as /mnt/c/, etc.)
-- Use WSL-specific package management (apt)
-
-## Next Steps
-
-1. ✅ Verify everything is working
-2. 📝 Customize aliases and scripts as needed
-3. 🔄 Test on another machine
-4. 📚 Review documentation for advanced features
-
-## Common Tasks
-
-### Add a new alias
-
-```bash
-# Edit development aliases
-eda
-
-# Add your alias:
-alias myalias='command here'
-
-# Reload
+echo 'export GITHUB_TOKEN="ghp_your_token"' >> ~/.secret_env_vars
 source ~/.zshrc
 ```
 
-### Add a new script
+### brew command not found (macOS)
 
+Homebrew needs to be in your PATH. The `.zprofile` handles this, but on first install before symlinks exist:
 ```bash
-# Create script in ~/scripts
-vim ~/scripts/myscript.sh
-
-# Make it executable
-chmod +x ~/scripts/myscript.sh
-
-# Use immediately
-myscript.sh
+eval "$(/opt/homebrew/bin/brew shellenv)"
 ```
 
-### Update dotfiles from repo
+### Scripts not in PATH
+
+Verify `~/scripts` is in your PATH:
+```bash
+echo $PATH | tr ':' '\n' | grep scripts
+```
+
+If missing, re-run `source ~/.zshrc` — the PATH is set there.
+
+### Git clone fails (permission denied)
+
+Your SSH key isn't loaded. Check:
+```bash
+ssh-add -l                           # list loaded keys
+ssh-add ~/.ssh/id_ed25519            # add if missing
+ssh -T git@github.com               # test connection
+```
+
+### 1Password SSH agent not working
+
+The `.ssh/config` uses `Match` blocks to auto-detect the platform-correct socket:
+- macOS: `~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock`
+- Linux: `~/.1password/agent.sock`
+
+Make sure 1Password is installed and SSH agent is enabled in 1Password settings.
+
+## Platform Notes
+
+### macOS
+- Zsh is the default shell since Catalina
+- Karabiner config is symlinked (keyboard remapping)
+- Amazon Q integration is active
+- Android SDK path: `~/Library/Android/sdk`
+
+### Linux (Ubuntu/Debian)
+- Zsh is installed and set as default shell by the installer
+- Karabiner is skipped (macOS only)
+- Amazon Q blocks are skipped
+- Snap packages installed for GUI apps (VS Code, Slack, Discord, etc.)
+- Android SDK path: `~/Android/Sdk`
+
+### WSL2
+- Works like Linux — use the Linux install path
+- Some macOS-specific scripts (pbcopy, desktop notifications) won't work
+- SSH keys and git work identically to native Linux
+
+## Updating
+
+After the initial setup, pull and re-run:
 
 ```bash
 cd ~/Development/Personal/dotfiles
-git pull origin main
-./install.sh  # Re-create symlinks if needed
+git pull
+./install.sh
 source ~/.zshrc
 ```
 
-### Remove or modify symlink
-
-```bash
-# See what's symlinked
-ls -la ~/ | grep "dotfiles"
-
-# Remove symlink
-rm ~/.zshrc
-
-# Create new one manually
-ln -s ~/Development/Personal/dotfiles/.zshrc ~/.zshrc
-```
-
-## Getting Help
-
-- Check [AWS.md](AWS.md) for AWS-specific issues
-- Review the main [README.md](../README.md)
-- Check your script's help output: `script.sh --help`
-
-## Support
-
-- GitHub Issues: [BrianVia/dotfiles](https://github.com/BrianVia/dotfiles/issues)
-- Email: brian.via.dev@gmail.com
+The installer is idempotent — existing symlinks, SSH keys, and oh-my-zsh are skipped. Only new/changed things are applied.

@@ -53,7 +53,11 @@ const PROJECT_COPY_DIRS = [
   '/Users/via/Development/Dfinitiv/savvy-rewards-network/docs/api-clients',
   '/Users/via/Development/Dfinitiv/savvy-webhooks/docs/api-clients'
 ];
-process.env.GITHUB_TOKEN = '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';
+// GITHUB_TOKEN must be set in environment (e.g. via ~/.secret_env_vars)
+if (!process.env.GITHUB_TOKEN) {
+  console.error('GITHUB_TOKEN not set. Add it to ~/.secret_env_vars');
+  process.exit(1);
+}
 
 
 interface ReadmeResult {

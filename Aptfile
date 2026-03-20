@@ -1,0 +1,40 @@
+# Linux apt packages — one per line
+# Extracted from ansible/tasks/development-tools.yml
+
+# Utilities
+httpie
+zsh
+jq
+fzf
+ripgrep
+bat
+lsd
+htop
+btop
+curl
+wget
+tree
+tldr
+nmap
+docker.io
+
+# Languages & Runtimes
+nodejs
+npm
+python3
+python3-pip
+golang-go
+
+# Media & Design
+ffmpeg
+vlc
+gimp
+obs-studio
+inkscape
+
+# Browsers
+firefox
+
+# Desktop apps
+alacritty
+nextcloud-desktop

@@ -1,25 +1,167 @@
 # dotfiles
 
-Personal dotfiles, scripts, and machine bootstrap tooling for macOS.
+Personal dotfiles, scripts, and machine bootstrap tooling for **macOS and Linux**.
 
-## Quick Start
+One repo to rule them all — clone over HTTPS on a blank machine, decrypt your SSH keys with a memorized password, and you're fully bootstrapped.
+
+## Fresh Machine Install (from scratch)
+
+You're sitting in front of a blank machine. No SSH key, no tools, nothing. Here's the play:
+
+### 1. Install prerequisites
+
+**macOS:**
+```bash
+# Xcode command line tools (gives you git)
+xcode-select --install
+
+# Homebrew
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+# Ansible (needed to decrypt SSH keys)
+brew install ansible
+```
+
+**Linux (Ubuntu/Debian):**
+```bash
+sudo apt update && sudo apt install -y git curl ansible
+```
+
+### 2. Clone this repo (HTTPS — no SSH key needed yet)
 
 ```bash
-git clone git@github.com:BrianVia/dotfiles.git ~/Development/Personal/dotfiles
+mkdir -p ~/Development/Personal
+git clone https://github.com/BrianVia/dotfiles.git ~/Development/Personal/dotfiles
 cd ~/Development/Personal/dotfiles
+```
+
+### 3. Run the installer
+
+```bash
 ./install.sh
+```
+
+This runs through 6 stages in order:
+
+| Stage | What happens |
+|-------|-------------|
+| **SSH keys** | Copies vault-encrypted private key to `~/.ssh/`, prompts for vault password, decrypts in place |
+| **Shell** | Installs oh-my-zsh + zsh-autosuggestions (Linux: installs zsh, changes default shell) |
+| **Symlinks** | Links all dotfiles to `~` — shell configs, git configs, SSH config, tool configs. macOS-only files (Karabiner) are guarded |
+| **VS Code** | Symlinks settings + keybindings to platform-correct path |
+| **Scripts** | Copies `scripts/` to `~/scripts` |
+| **Packages** | Brewfile on macOS, Aptfile + Snapfile on Linux, Claude CLI + Rust on both |
+
+### 4. Set up secrets
+
+```bash
+vim ~/.secret_env_vars
+```
+
+Add at minimum:
+```bash
+export GITHUB_TOKEN="ghp_your_token_here"  # needed for @dfinitiv npm packages
+```
+
+### 5. Reload shell
+
+```bash
 source ~/.zshrc
 ```
 
-`install.sh` will:
-- Symlink all dotfiles to `~`
-- Copy scripts to `~/scripts`
-- Install Homebrew packages from `Brewfile`
-- Install oh-my-zsh + zsh-autosuggestions
-- Set up VS Code settings (if installed)
-- Create a `~/.secret_env_vars` template (chmod 600)
+### 6. Clone all repos
 
-After install, run `./clone-repos.sh` to clone 100+ work and personal repos into `~/Development/`.
+```bash
+./clone-repos.sh
+```
+
+This clones 100+ work and personal repos into `~/Development/` using your now-decrypted SSH key.
+
+### 7. AWS SSO
+
+```bash
+aws sso login --profile dfinitiv-brian
+```
+
+See [docs/AWS.md](docs/AWS.md) for all profiles and troubleshooting.
+
+## Verify everything works
+
+```bash
+# SSH
+ssh -T git@github.com                        # "Hi BrianVia!"
+
+# Shell
+echo $SHELL                                   # /bin/zsh
+which claude                                  # Claude CLI installed
+
+# Aliases
+gs                                            # git status
+sendit                                        # add all, commit, push
+
+# Scripts
+timer 1m                                      # desktop notification timer
+hoy                                           # today's date + calendar
+
+# AWS
+aws sts get-caller-identity --profile dfinitiv-brian
+
+# Git
+git config --global user.name                 # "Brian Via"
+```
+
+---
+
+## SSH Keys (ansible-vault)
+
+The private key at `.ssh/id_ed25519.vault` is encrypted with [ansible-vault](https://docs.ansible.com/ansible/latest/vault_guide/) (AES256). The public key `.ssh/id_ed25519.pub` is plaintext.
+
+During install, you're prompted for the vault password. The encrypted file is copied to `~/.ssh/id_ed25519` and decrypted in place. If a key already exists at the destination, it's skipped entirely.
+
+## Platform Support
+
+| Feature | macOS | Linux |
+|---------|-------|-------|
+| SSH key decrypt | ✓ | ✓ |
+| oh-my-zsh | ✓ | ✓ (installs zsh first) |
+| Dotfile symlinks | ✓ | ✓ |
+| Karabiner | ✓ | — |
+| VS Code settings | ✓ | ✓ |
+| Packages | Brewfile | Aptfile + Snapfile |
+| Claude CLI | ✓ | ✓ |
+| Amazon Q | ✓ | — |
+| 1Password SSH agent | ✓ | ✓ (different socket path) |
+| Android SDK | `~/Library/Android/sdk` | `~/Android/Sdk` |
+
+## Directory Structure
+
+```
+.
+├── setup/              # Modular setup scripts
+│   ├── common.sh       # Shared utilities (colors, detect_os, create_symlink)
+│   ├── ssh.sh          # SSH key deployment + vault decrypt
+│   ├── shell.sh        # Zsh + oh-my-zsh
+│   ├── symlinks.sh     # Dotfile symlinking
+│   ├── vscode.sh       # VS Code settings
+│   ├── scripts.sh      # ~/scripts deployment
+│   └── packages.sh     # Platform-aware package install + Claude CLI
+├── docker/             # Docker-based Linux testing
+│   ├── Dockerfile
+│   └── build.sh
+├── scripts/            # Utility scripts (copied to ~/scripts)
+├── vscode/             # VS Code settings + keybindings
+├── .ssh/
+│   ├── config          # SSH config (platform-aware 1Password agent)
+│   ├── id_ed25519.vault # Encrypted private key (ansible-vault)
+│   └── id_ed25519.pub  # Public key
+├── Brewfile            # macOS Homebrew packages
+├── Aptfile             # Linux apt packages
+├── Snapfile            # Linux snap packages
+├── install.sh          # Main orchestrator
+├── clone-repos.sh      # Clone 100+ repos
+└── README.md
+```
 
 ## What's In Here
 
@@ -27,44 +169,27 @@ After install, run `./clone-repos.sh` to clone 100+ work and personal repos into
 
 | File | Purpose |
 |------|---------|
-| `.zshrc` | Main shell config — plugins, PATH, AWS SSO switcher, starship prompt, bun/Java/Android SDK setup |
-| `.zprofile` | Zsh profile init |
+| `.zshrc` | Main shell config — plugins, PATH, AWS SSO switcher, bun/Java/Android SDK setup |
+| `.zprofile` | Zsh profile init (platform-guarded Homebrew + Amazon Q) |
 | `.zshenv` | Zsh environment variables |
 | `.bashrc` | Bash fallback |
 | `.profile` | POSIX profile, sourced by `.zshrc` |
-| `.zshrc.local.example` | Template for machine-specific overrides (not committed) |
 
 ### Aliases
 
 **`.development_aliases`** — daily driver shortcuts:
 
-| Alias | Command |
-|-------|---------|
-| `gs` | `git status` |
-| `gp` / `gpu` | `git push` / `git pull` |
-| `ga` | `git add -a` |
-| `gc` | `git checkout` |
-| `gm` | `git commit -am` |
-| `mm` | merge master into current branch |
-| `bb` | `git checkout -` (back to previous branch) |
+| Alias | What it does |
+|-------|-------------|
+| `gs` / `gp` / `gpu` | git status / push / pull |
+| `ga` / `gc` / `gm` | git add -a / checkout / commit -am |
+| `mm` / `bb` | merge master / back to previous branch |
 | `sendit` | add all, commit "full send", push |
-| `copy` / `pasta` | clipboard utilities |
-| `serveit` | quick dev server (PHP/Python/Ruby) |
-| `timer` | desktop notification timer |
-| `hoy` | today's date + calendar |
-| `brs` / `brd` / `brt` | `bun run start/dev/test` |
-| `dcu` / `dc` / `dcd` | docker-compose up/exec/down |
-| `eda` / `epa` / `ez` | edit aliases / personal aliases / zshrc in VS Code |
-| `ll` / `lr` | detailed listing / recent files |
+| `brs` / `brd` / `brt` | bun run start / dev / test |
+| `dcu` / `dc` / `dcd` | docker-compose up / exec / down |
+| `eda` / `epa` / `ez` | edit aliases / personal aliases / zshrc |
 
-**`.personal_aliases`** — personal workflow:
-
-| Alias | Command |
-|-------|---------|
-| `src` | reload oh-my-zsh |
-| `ccy` / `coy` | claude / codex yolo mode |
-| `cdp` | `cd ~/Development/Personal/` |
-| `tf` | `tail -f` with configurable line count |
+**`.personal_aliases`** — personal workflow (`src`, `ccy`, `coy`, `cdp`, `tf`)
 
 ### Git
 
@@ -74,117 +199,54 @@ After install, run `./clone-repos.sh` to clone 100+ work and personal repos into
 | `.gitconfig-work` | Auto-applied in `~/Development/Dfinitiv/` |
 | `.gitconfig-personal` | Auto-applied in `~/Development/Personal/` |
 
-### AWS
-
-| File | Purpose |
-|------|---------|
-| `.aws/config` | 4 SSO profiles: `dfinitiv-brian`, `dfinitiv-mojo-{dev,test,prod}-power-user` |
-| `.aws/credentials.example` | Template (actual credentials are gitignored) |
-
-See [docs/AWS.md](docs/AWS.md) for SSO setup and profile switching.
-
 ### Tool Configs
 
 | File | Purpose |
 |------|---------|
-| `.config/starship.toml` | Starship prompt (minimal green `$`) |
+| `.config/starship.toml` | Starship prompt |
 | `.config/ghostty/config` | Ghostty terminal settings |
-| `.config/karabiner/karabiner.json` | Keyboard remapping |
-| `.ssh/config` | SSH config (keys are gitignored) |
-| `.npmrc` | npm global prefix, GitHub Packages for `@dfinitiv` scope |
+| `.config/karabiner/karabiner.json` | Keyboard remapping (macOS only) |
+| `.ssh/config` | SSH config with platform-aware 1Password agent |
+| `.npmrc` | npm config — uses `${GITHUB_TOKEN}` env var for GitHub Packages auth |
 | `.yarnrc` | Yarn config |
 
-### VS Code
+## Docker Testing (Linux)
 
-| File | Purpose |
-|------|---------|
-| `vscode/settings.json` | Prettier as default formatter, no minimap, zoom level 2, material icons, git auto-fetch, Copilot |
-| `vscode/keybindings.json` | Custom keyboard shortcuts |
+Test the full Linux install path without a real machine:
 
-Symlinked to `~/Library/Application Support/Code/User/` on install.
-
-### Brewfile
-
-40+ packages including: `ansible`, `awscli`, `ffmpeg`, `gh`, `htop`, `imagemagick`, `jq`, `starship`, `tmux`, `yt-dlp`, `stripe`, `graphite`
-
-Casks: `1password-cli`, `blackhole-2ch`, `fig`, `macfuse`
-
-VS Code extensions: `claude-code`, `copilot-chat`, `prettier`, `eslint`, `astro`, `svelte`
-
-## Scripts
-
-All scripts live in `scripts/` and get copied to `~/scripts` during install. Most are aliased in `.development_aliases`.
-
-### Everyday Utilities
-
-| Script | What it does |
-|--------|-------------|
-| `copy_clipboard.sh` / `paste_clipboard.sh` | Cross-platform clipboard (pbcopy/xclip/putclip) |
-| `timer.sh` | Sleep timer with desktop notification via `notify.rb` |
-| `hoy.sh` | Print today's date with calendar highlight |
-| `serveit.sh` | Quick HTTP server (tries PHP, Python, Ruby) |
-| `rn.sh` | Random name generator |
-| `running.sh` | Show running processes |
-| `notify.rb` | macOS desktop notifications |
-
-### Git & Work Tracking
-
-| Script | What it does |
-|--------|-------------|
-| `get-yesterdays-work.sh` | Scan `~/Development/Dfinitiv` for your commits in the last 24h |
-| `get-yesterdays-work.py` | Python version of the above |
-| `git_log_projects.sh` | Git log across multiple projects |
-| `copy_changed_files.sh` | Copy changed files from git |
-| `copy_directory_files.sh` | Copy all files from a directory |
-| `linear-daily-summary.sh` | AI-powered daily work summary via Claude CLI + Linear MCP |
-
-### AWS & Infrastructure
-
-| Script | What it does |
-|--------|-------------|
-| `add-secret.ts` | Interactive CLI for AWS Secrets Manager (Bun + chalk) |
-| `set-default-github-actions-secrets.sh` | Bulk-set GitHub Actions secrets |
-| `find-all-lambdas-not-used.sh` | Find unused Lambda functions |
-| `fetch-readme.ts` | Fetch READMEs from Dfinitiv npm packages, distribute to project docs |
-| `migrate-marketing-assets.ts` | Internal Dfinitiv asset migration |
-
-### Ralph Loop Agent
-
-`scripts/ralph/` is an autonomous AI development loop (inspired by Geoffrey Huntley's technique). It uses the Anthropic SDK to iteratively work on tasks with configurable stop conditions.
-
-| File | Purpose |
-|------|---------|
-| `agent.ts` | Core `RalphLoopAgent` class — loop state, tool use, cost tracking |
-| `tools.ts` | Sandboxed tools: `readFile`, `writeFile`, `execute`, `glob`, `fileExists` |
-| `conditions.ts` | Stop conditions: iteration count, token budget, cost ceiling, duration |
-| `tracker.ts` | Token/cost tracking per API call |
-| `example.ts` | Example: automated Jest-to-Vitest migration |
-
-## Repo Cloning
-
-`clone-repos.sh` clones 100+ repositories into organized directories:
-
-```
-~/Development/
-  Dfinitiv/      # 35+ work repos (savvy-*, mojo-*, constructs, etc.)
-  MCP-Servers/   # MCP server repos
-  Open-Source/    # Forks and references
-  Personal/      # 50+ personal projects
+```bash
+cd docker
+./build.sh
+docker run -it dotfiles-test
 ```
 
-`repos.md` has the full manifest.
+Builds an Ubuntu container with ansible pre-installed, copies dotfiles in, runs `install.sh`. The vault decrypt step will prompt for the password interactively.
 
 ## Security
 
-These are gitignored and never committed:
+Gitignored — never committed:
 
 - `.aws/credentials` and `.aws/sso/` — AWS keys and session tokens
-- `.secret_env_vars` — environment secrets
+- `.secret_env_vars` — environment secrets (including `GITHUB_TOKEN`)
 - `.env` / `.env.*` — local environment files
-- SSH private keys
+- SSH private keys (only the vault-encrypted `.vault` file is committed)
+
+The `.npmrc` uses `${GITHUB_TOKEN}` as an env var reference — the actual token lives in `~/.secret_env_vars`, not in this repo.
+
+## Updating
+
+After pulling new changes:
+
+```bash
+cd ~/Development/Personal/dotfiles
+git pull
+./install.sh     # re-runs symlinks, skips existing SSH keys/oh-my-zsh
+source ~/.zshrc
+```
+
+The installer is idempotent — it skips anything already in place and backs up conflicting files.
 
 ## Docs
 
-- [docs/SETUP.md](docs/SETUP.md) — step-by-step setup guide
+- [docs/SETUP.md](docs/SETUP.md) — detailed step-by-step setup guide with troubleshooting
 - [docs/AWS.md](docs/AWS.md) — AWS SSO config, profile switching, troubleshooting
-- [scripts/README.md](scripts/README.md) — fetch-readme.ts cron setup

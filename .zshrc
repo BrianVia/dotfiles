@@ -18,8 +18,8 @@ else
     export IS_WSL2=false
 fi
 
-# Unlock keychain for SSH sessions (needed for Claude Code)
-if [[ -n "$SSH_CONNECTION" ]]; then
+# Unlock keychain for SSH sessions (needed for Claude Code) — macOS only
+if [[ "$OSTYPE" == darwin* ]] && [[ -n "$SSH_CONNECTION" ]]; then
     security unlock-keychain ~/Library/Keychains/login.keychain-db 2>/dev/null
 fi
 
@@ -78,14 +78,22 @@ sso() {
     fi
 }
 
-# Java JDK for Android development
-export JAVA_HOME=$(brew --prefix openjdk@17)
-export PATH="$JAVA_HOME/bin:$PATH"
+# Java JDK for Android development (macOS only — requires brew)
+if [[ "$OSTYPE" == darwin* ]] && command -v brew &>/dev/null; then
+    export JAVA_HOME=$(brew --prefix openjdk@17)
+    export PATH="$JAVA_HOME/bin:$PATH"
+fi
 
-# Android SDK
-export ANDROID_HOME=$HOME/Library/Android/sdk
-export PATH=$PATH:$ANDROID_HOME/emulator
-export PATH=$PATH:$ANDROID_HOME/platform-tools
+# Android SDK — platform-aware paths
+if [[ "$OSTYPE" == darwin* ]]; then
+    export ANDROID_HOME=$HOME/Library/Android/sdk
+else
+    export ANDROID_HOME=$HOME/Android/Sdk
+fi
+if [ -d "$ANDROID_HOME" ]; then
+    export PATH=$PATH:$ANDROID_HOME/emulator
+    export PATH=$PATH:$ANDROID_HOME/platform-tools
+fi
 
 # Amazon Q post block. Keep at the bottom of this file.
 # macOS-specific Amazon Q
@@ -104,12 +112,12 @@ mkcd() {
 }
 
 # Added by Antigravity
-export PATH="/Users/via/.antigravity/antigravity/bin:$PATH"
+export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
 
-alias claude="/Users/via/.claude/local/claude"
+alias claude="$HOME/.claude/local/claude"
 
 # opencode
-export PATH=/Users/via/.opencode/bin:$PATH
+export PATH=$HOME/.opencode/bin:$PATH
 
 if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi
 
