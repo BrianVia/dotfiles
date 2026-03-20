@@ -18,10 +18,12 @@ else
     export IS_WSL2=false
 fi
 
-# Unlock keychain for SSH sessions (needed for Claude Code) — macOS only
-if [[ "$OSTYPE" == darwin* ]] && [[ -n "$SSH_CONNECTION" ]]; then
-    security unlock-keychain ~/Library/Keychains/login.keychain-db 2>/dev/null
-fi
+# Keychain unlock for SSH sessions — commented out because it prompts
+# for password on every shell startup which is annoying over SSH.
+# Uncomment if you need keychain access in remote sessions:
+# if [[ "$OSTYPE" == darwin* ]] && [[ -n "$SSH_CONNECTION" ]]; then
+#     security unlock-keychain ~/Library/Keychains/login.keychain-db 2>/dev/null
+# fi
 
 export ZSH="$HOME_DIR/.oh-my-zsh"
 
