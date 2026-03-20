@@ -114,7 +114,8 @@ mkcd() {
 # Added by Antigravity
 export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
 
-alias claude="$HOME/.claude/local/claude"
+# Claude CLI — installed to ~/.local/bin by official installer
+# No alias needed; ~/.local/bin is already in PATH
 
 # opencode
 export PATH=$HOME/.opencode/bin:$PATH
