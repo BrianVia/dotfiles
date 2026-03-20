@@ -32,7 +32,7 @@ sudo apt update && sudo apt install -y git curl ansible
 
 ```bash
 mkdir -p ~/Development/Personal
-git clone https://github.com/BrianVia/dotfiles.git ~/Development/Personal/dotfiles
+git clone git@github.com:BrianVia/dotfiles.git ~/Development/Personal/dotfiles
 cd ~/Development/Personal/dotfiles
 ```
 

@@ -40,13 +40,14 @@ sudo apt install -y ansible
 
 ## Step 2: Clone Dotfiles
 
-Clone over HTTPS — you don't have an SSH key yet, that's the whole point.
-
 ```bash
 mkdir -p ~/Development/Personal
-git clone https://github.com/BrianVia/dotfiles.git ~/Development/Personal/dotfiles
+git clone git@github.com:BrianVia/dotfiles.git ~/Development/Personal/dotfiles
 cd ~/Development/Personal/dotfiles
 ```
+
+> **No SSH key yet?** The repo is public — use HTTPS instead:
+> `git clone https://github.com/BrianVia/dotfiles.git ~/Development/Personal/dotfiles`
 
 ## Step 3: Run the Installer
 
